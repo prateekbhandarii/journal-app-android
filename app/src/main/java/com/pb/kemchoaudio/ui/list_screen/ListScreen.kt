@@ -19,6 +19,7 @@ import com.pb.kemchoaudio.core.presentation.designsystem.theme.KemChoAudioTheme
 import com.pb.kemchoaudio.core.presentation.designsystem.theme.bgGradiant
 import com.pb.kemchoaudio.ui.components.AudioTopBar
 import com.pb.kemchoaudio.ui.components.EmptyStateBackground
+import com.pb.kemchoaudio.ui.components.FilterRow
 import com.pb.kemchoaudio.ui.components.RecordFloatingButton
 
 @Composable
@@ -62,6 +63,19 @@ fun ListScreen(
                 )
                 .padding(innerPadding)
         ) {
+
+            FilterRow(
+                moodChipContent = state.moodChipContent,
+                hasActiveMoodFilters = state.hasActiveMoodFilter,
+                selectedAudioFilterChip = state.selectedFilterChip,
+                moods = state.moods,
+                topicChipTitle = state.topicChipTitle,
+                hasActiveTopicFilters = state.hasActiveTopicFilters,
+                topics = state.topics,
+                onAction = onAction,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             when {
                 state.isLoadingData -> {
                     CircularProgressIndicator(
@@ -76,7 +90,7 @@ fun ListScreen(
                 !state.hasAudioRecorded -> {
                     EmptyStateBackground(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .weight(1f)
                     )
                 }

@@ -1,5 +1,6 @@
 package com.pb.kemchoaudio.core.presentation.util
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -9,6 +10,27 @@ import androidx.compose.ui.res.stringResource
 sealed interface UiText {
 
     data class DynamicString(val value: String) : UiText
+
+    @Stable
+    data class Combined(val format: String, val uiTexts: Array<UiText>) : UiText {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Combined
+
+            if (format != other.format) return false
+            if (!uiTexts.contentEquals(other.uiTexts)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = format.hashCode()
+            result = 31 * result + uiTexts.contentHashCode()
+            return result
+        }
+    }
 
     @Stable
     data class StringResource(
@@ -39,6 +61,33 @@ sealed interface UiText {
         return when (this) {
             is DynamicString -> value
             is StringResource -> stringResource(id = resId, *args)
+            is Combined -> {
+                val strings = uiTexts.map {
+                    when (it) {
+                        is DynamicString -> it.value
+                        is StringResource -> stringResource(it.resId, *it.args)
+                        is Combined -> throw IllegalArgumentException("Nested Combined UiText is not supported")
+                    }
+                }
+                String.format(format, *strings.toTypedArray())
+            }
+        }
+    }
+
+    fun asString(context: Context): String {
+        return when (this) {
+            is DynamicString -> value
+            is StringResource -> context.getString(resId, *args)
+            is Combined -> {
+                val strings = uiTexts.map {
+                    when (it) {
+                        is DynamicString -> it.value
+                        is StringResource -> context.getString(it.resId, *it.args)
+                        is Combined -> throw IllegalArgumentException("Nested Combined UiText is not supported")
+                    }
+                }
+                String.format(format, *strings.toTypedArray())
+            }
         }
     }
 }
