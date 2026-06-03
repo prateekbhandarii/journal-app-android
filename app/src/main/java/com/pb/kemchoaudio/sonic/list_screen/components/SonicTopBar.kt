@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.pb.kemchoaudio.ui.components
+package com.pb.kemchoaudio.sonic.list_screen.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import com.pb.kemchoaudio.R
 
 @Composable
-fun AudioTopBar(
+fun SonicTopBar(
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit
 ) {

@@ -1,4 +1,4 @@
-package com.pb.kemchoaudio.ui.models
+package com.pb.kemchoaudio.sonic.list_screen.models
 
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color

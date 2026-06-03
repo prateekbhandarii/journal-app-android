@@ -1,12 +1,12 @@
-package com.pb.kemchoaudio.ui.list_screen
+package com.pb.kemchoaudio.sonic.list_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pb.kemchoaudio.R
 import com.pb.kemchoaudio.core.presentation.designsystem.dropdowns.Selectable
 import com.pb.kemchoaudio.core.presentation.util.UiText
-import com.pb.kemchoaudio.ui.models.MoodChipContent
-import com.pb.kemchoaudio.ui.models.MoodUi
+import com.pb.kemchoaudio.sonic.list_screen.models.MoodChipContent
+import com.pb.kemchoaudio.sonic.list_screen.models.MoodUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -42,23 +42,23 @@ class ListScreenViewModel : ViewModel() {
             ListScreenAction.OnFabLongClick -> {}
             ListScreenAction.OnMoodChipClick -> {
                 _state.update { it.copy(
-                    selectedFilterChip = AudioFilterType.MOODS,
+                    selectedFilterChip = SonicFilterType.MOODS,
                 ) }
             }
             is ListScreenAction.OnRemoveFilters -> {
                 when(action.filterType) {
-                    AudioFilterType.MOODS -> {
+                    SonicFilterType.MOODS -> {
                         selectedMoodFilters.value = emptyList()
                     }
 
-                    AudioFilterType.TOPICS -> {
+                    SonicFilterType.TOPICS -> {
                         selectedTopicFilters.value = emptyList()
                     }
                 }
             }
             ListScreenAction.OnTopicChipClick -> {
                 _state.update { it.copy(
-                    selectedFilterChip = AudioFilterType.TOPICS,
+                    selectedFilterChip = SonicFilterType.TOPICS,
                 ) }
             }
             ListScreenAction.OnSettingsClick -> {}

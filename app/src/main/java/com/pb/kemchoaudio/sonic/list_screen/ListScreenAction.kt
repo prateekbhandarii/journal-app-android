@@ -1,6 +1,6 @@
-package com.pb.kemchoaudio.ui.list_screen
+package com.pb.kemchoaudio.sonic.list_screen
 
-import com.pb.kemchoaudio.ui.models.MoodUi
+import com.pb.kemchoaudio.sonic.list_screen.models.MoodUi
 
 sealed interface ListScreenAction {
     data object OnMoodChipClick : ListScreenAction
@@ -12,5 +12,5 @@ sealed interface ListScreenAction {
     data object OnFabClick : ListScreenAction
     data object OnFabLongClick : ListScreenAction
     data object OnSettingsClick : ListScreenAction
-    data class OnRemoveFilters(val filterType: AudioFilterType) : ListScreenAction
+    data class OnRemoveFilters(val filterType: SonicFilterType) : ListScreenAction
 }

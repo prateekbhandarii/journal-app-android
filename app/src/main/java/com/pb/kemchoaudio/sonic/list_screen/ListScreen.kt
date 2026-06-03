@@ -1,4 +1,4 @@
-package com.pb.kemchoaudio.ui.list_screen
+package com.pb.kemchoaudio.sonic.list_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -17,10 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pb.kemchoaudio.core.presentation.designsystem.theme.KemChoAudioTheme
 import com.pb.kemchoaudio.core.presentation.designsystem.theme.bgGradiant
-import com.pb.kemchoaudio.ui.components.AudioTopBar
-import com.pb.kemchoaudio.ui.components.EmptyStateBackground
-import com.pb.kemchoaudio.ui.components.FilterRow
-import com.pb.kemchoaudio.ui.components.RecordFloatingButton
+import com.pb.kemchoaudio.sonic.list_screen.components.SonicTopBar
+import com.pb.kemchoaudio.sonic.list_screen.components.EmptyStateBackground
+import com.pb.kemchoaudio.sonic.list_screen.components.FilterRow
+import com.pb.kemchoaudio.sonic.list_screen.components.RecordFloatingButton
 
 @Composable
 fun ListScreenRoot(
@@ -48,7 +48,7 @@ fun ListScreen(
             )
         },
         topBar = {
-            AudioTopBar(
+            SonicTopBar(
                 onSettingsClick = {
                     onAction(ListScreenAction.OnSettingsClick)
                 }

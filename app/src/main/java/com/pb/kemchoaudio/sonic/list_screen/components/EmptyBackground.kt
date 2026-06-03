@@ -1,4 +1,4 @@
-package com.pb.kemchoaudio.ui.components
+package com.pb.kemchoaudio.sonic.list_screen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

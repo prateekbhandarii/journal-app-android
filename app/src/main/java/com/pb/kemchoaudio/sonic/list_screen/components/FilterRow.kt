@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalLayoutApi::class)
 
-package com.pb.kemchoaudio.ui.components
+package com.pb.kemchoaudio.sonic.list_screen.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -27,10 +27,10 @@ import com.pb.kemchoaudio.core.presentation.designsystem.chips.MultiChoiceChip
 import com.pb.kemchoaudio.core.presentation.designsystem.dropdowns.Selectable
 import com.pb.kemchoaudio.core.presentation.designsystem.dropdowns.SelectableDropDownOptionsMenu
 import com.pb.kemchoaudio.core.presentation.util.UiText
-import com.pb.kemchoaudio.ui.list_screen.AudioFilterType
-import com.pb.kemchoaudio.ui.list_screen.ListScreenAction
-import com.pb.kemchoaudio.ui.models.MoodChipContent
-import com.pb.kemchoaudio.ui.models.MoodUi
+import com.pb.kemchoaudio.sonic.list_screen.SonicFilterType
+import com.pb.kemchoaudio.sonic.list_screen.ListScreenAction
+import com.pb.kemchoaudio.sonic.list_screen.models.MoodChipContent
+import com.pb.kemchoaudio.sonic.list_screen.models.MoodUi
 
 @Composable
 fun FilterRow(
@@ -38,7 +38,7 @@ fun FilterRow(
     moodChipContent: MoodChipContent,
     hasActiveMoodFilters: Boolean,
     hasActiveTopicFilters: Boolean,
-    selectedAudioFilterChip: AudioFilterType?,
+    selectedAudioFilterChip: SonicFilterType?,
     moods: List<Selectable<MoodUi>>,
     topicChipTitle: UiText,
     topics: List<Selectable<String>>,
@@ -85,10 +85,10 @@ fun FilterRow(
                 }
             },
             isClearVisible = hasActiveMoodFilters,
-            isDropDownVisible = selectedAudioFilterChip == AudioFilterType.MOODS,
-            isHighlighted = hasActiveMoodFilters || selectedAudioFilterChip == AudioFilterType.MOODS,
+            isDropDownVisible = selectedAudioFilterChip == SonicFilterType.MOODS,
+            isHighlighted = hasActiveMoodFilters || selectedAudioFilterChip == SonicFilterType.MOODS,
             onClearButtonClick = {
-                onAction(ListScreenAction.OnRemoveFilters(AudioFilterType.MOODS))
+                onAction(ListScreenAction.OnRemoveFilters(SonicFilterType.MOODS))
             },
             dropDownMenu = {
                 SelectableDropDownOptionsMenu(
@@ -118,10 +118,10 @@ fun FilterRow(
                 onAction(ListScreenAction.OnTopicChipClick)
             },
             isClearVisible = hasActiveTopicFilters,
-            isDropDownVisible = selectedAudioFilterChip == AudioFilterType.TOPICS,
-            isHighlighted = hasActiveTopicFilters || selectedAudioFilterChip == AudioFilterType.TOPICS,
+            isDropDownVisible = selectedAudioFilterChip == SonicFilterType.TOPICS,
+            isHighlighted = hasActiveTopicFilters || selectedAudioFilterChip == SonicFilterType.TOPICS,
             onClearButtonClick = {
-                onAction(ListScreenAction.OnRemoveFilters(AudioFilterType.TOPICS))
+                onAction(ListScreenAction.OnRemoveFilters(SonicFilterType.TOPICS))
             },
             dropDownMenu = {
                 if (topics.isEmpty()) {

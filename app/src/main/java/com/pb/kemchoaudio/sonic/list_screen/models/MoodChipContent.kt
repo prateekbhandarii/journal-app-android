@@ -1,4 +1,4 @@
-package com.pb.kemchoaudio.ui.models
+package com.pb.kemchoaudio.sonic.list_screen.models
 
 import com.pb.kemchoaudio.R
 import com.pb.kemchoaudio.core.presentation.util.UiText
