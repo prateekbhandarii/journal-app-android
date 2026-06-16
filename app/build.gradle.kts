@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.pb.kemchoaudio"
+    namespace = "com.pb.audia"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.pb.kemchoaudio"
+        applicationId = "com.pb.audia"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -33,6 +33,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
+        isCoreLibraryDesugaringEnabled = true
     }
     buildFeatures {
         compose = true

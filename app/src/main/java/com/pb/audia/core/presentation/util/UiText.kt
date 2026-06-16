@@ -1,0 +1,93 @@
+package com.pb.audia.core.presentation.util
+
+import android.content.Context
+import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.res.stringResource
+
+@Stable
+sealed interface UiText {
+
+    data class DynamicString(val value: String) : UiText
+
+    @Stable
+    data class Combined(val format: String, val uiTexts: Array<UiText>) : UiText {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Combined
+
+            if (format != other.format) return false
+            if (!uiTexts.contentEquals(other.uiTexts)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = format.hashCode()
+            result = 31 * result + uiTexts.contentHashCode()
+            return result
+        }
+    }
+
+    @Stable
+    data class StringResource(
+        @StringRes val resId: Int,
+        val args: Array<Any> = arrayOf()
+    ) : UiText {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as StringResource
+
+            if (resId != other.resId) return false
+            if (!args.contentEquals(other.args)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = resId
+            result = 31 * result + args.contentHashCode()
+            return result
+        }
+    }
+
+    @Composable
+    fun asString(): String {
+        return when (this) {
+            is DynamicString -> value
+            is StringResource -> stringResource(id = resId, *args)
+            is Combined -> {
+                val strings = uiTexts.map {
+                    when (it) {
+                        is DynamicString -> it.value
+                        is StringResource -> stringResource(it.resId, *it.args)
+                        is Combined -> throw IllegalArgumentException("Nested Combined UiText is not supported")
+                    }
+                }
+                String.format(format, *strings.toTypedArray())
+            }
+        }
+    }
+
+    fun asString(context: Context): String {
+        return when (this) {
+            is DynamicString -> value
+            is StringResource -> context.getString(resId, *args)
+            is Combined -> {
+                val strings = uiTexts.map {
+                    when (it) {
+                        is DynamicString -> it.value
+                        is StringResource -> context.getString(it.resId, *it.args)
+                        is Combined -> throw IllegalArgumentException("Nested Combined UiText is not supported")
+                    }
+                }
+                String.format(format, *strings.toTypedArray())
+            }
+        }
+    }
+}
