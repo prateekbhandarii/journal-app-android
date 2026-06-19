@@ -4,21 +4,23 @@ import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.dropdowns.Selectable
 import com.pb.audia.core.presentation.designsystem.dropdowns.Selectable.Companion.asUnselectedItems
 import com.pb.audia.core.presentation.util.UiText
+import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 import com.pb.audia.memo.presentation.models.MemoSection
 import com.pb.audia.memo.presentation.models.MemoUi
 import com.pb.audia.memo.presentation.models.MoodChipContent
 import com.pb.audia.memo.presentation.models.MoodUi
 
 data class MemoListScreenState(
-    val memoMap: Map<UiText, List<com.pb.audia.memo.presentation.models.MemoUi>> = emptyMap(),
+    val memoMap: Map<UiText, List<MemoUi>> = emptyMap(),
+    val currentAudioCaptureMethod: AudioCaptureMethod? = null,
     val hasAudioRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilter: Boolean = false,
     val isLoadingData: Boolean = false,
-    val moods: List<Selectable<com.pb.audia.memo.presentation.models.MoodUi>> = emptyList(),
+    val moods: List<Selectable<MoodUi>> = emptyList(),
     val topics: List<Selectable<String>> = listOf("Love", "Happy", "Work").asUnselectedItems(),
-    val moodChipContent: com.pb.audia.memo.presentation.models.MoodChipContent = _root_ide_package_.com.pb.audia.memo.presentation.models.MoodChipContent(),
-    val selectedFilterChip: com.pb.audia.memo.presentation.list_screen.MemoFilterType? = null,
+    val moodChipContent: MoodChipContent = MoodChipContent(),
+    val selectedFilterChip: MemoFilterType? = null,
     val topicChipTitle: UiText = UiText.StringResource(R.string.all_topics)
 ) {
     val memoList = memoMap

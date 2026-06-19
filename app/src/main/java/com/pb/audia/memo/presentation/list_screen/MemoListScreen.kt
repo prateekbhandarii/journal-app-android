@@ -1,5 +1,8 @@
 package com.pb.audia.memo.presentation.list_screen
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,19 +20,38 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.bgGradiant
+import com.pb.audia.core.presentation.util.ObserveAsEvents
+import com.pb.audia.memo.presentation.MemoEvents
 import com.pb.audia.memo.presentation.components.MemoTimeLine
 import com.pb.audia.memo.presentation.list_screen.components.EmptyStateBackground
 import com.pb.audia.memo.presentation.list_screen.components.FilterRow
 import com.pb.audia.memo.presentation.list_screen.components.MemoTopBar
 import com.pb.audia.memo.presentation.list_screen.components.RecordFloatingButton
+import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 
 @Composable
 fun MemoListScreenRoot(
-    viewModel: com.pb.audia.memo.presentation.list_screen.MemoListViewModel = viewModel()
+    viewModel: MemoListViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreen(
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted && state.currentAudioCaptureMethod == AudioCaptureMethod.STANDARD) {
+            viewModel.onAction(MemoListScreenAction.OnAudioPermissionGranted)
+        }
+    }
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is MemoEvents.RequestAudioPermission -> {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
+
+    MemoListScreen(
         state = state,
         onAction = viewModel::onAction
     )
@@ -37,21 +59,21 @@ fun MemoListScreenRoot(
 
 @Composable
 fun MemoListScreen(
-    state: com.pb.audia.memo.presentation.list_screen.MemoListScreenState,
-    onAction: (com.pb.audia.memo.presentation.list_screen.MemoListScreenAction) -> Unit,
+    state: MemoListScreenState,
+    onAction: (MemoListScreenAction) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
-            _root_ide_package_.com.pb.audia.memo.presentation.list_screen.components.RecordFloatingButton(
+            RecordFloatingButton(
                 onClick = {
-                    onAction(_root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenAction.OnFabClick)
+                    onAction(MemoListScreenAction.OnFabClick)
                 }
             )
         },
         topBar = {
-            _root_ide_package_.com.pb.audia.memo.presentation.list_screen.components.MemoTopBar(
+            MemoTopBar(
                 onSettingsClick = {
-                    onAction(_root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenAction.OnSettingsClick)
+                    onAction(MemoListScreenAction.OnSettingsClick)
                 }
             )
         },
@@ -65,7 +87,7 @@ fun MemoListScreen(
                 .padding(innerPadding)
         ) {
 
-            _root_ide_package_.com.pb.audia.memo.presentation.list_screen.components.FilterRow(
+            FilterRow(
                 moodChipContent = state.moodChipContent,
                 hasActiveMoodFilters = state.hasActiveMoodFilter,
                 selectedAudioFilterChip = state.selectedFilterChip,
@@ -89,7 +111,7 @@ fun MemoListScreen(
                 }
 
                 !state.hasAudioRecorded -> {
-                    _root_ide_package_.com.pb.audia.memo.presentation.list_screen.components.EmptyStateBackground(
+                    EmptyStateBackground(
                         modifier = Modifier
                             .fillMaxSize()
                             .weight(1f)
@@ -97,26 +119,26 @@ fun MemoListScreen(
                 }
 
                 else -> {
-                    _root_ide_package_.com.pb.audia.memo.presentation.components.MemoTimeLine(
+                    MemoTimeLine(
                         sections = state.memoList,
                         modifier = Modifier.fillMaxSize(),
                         onPlayClick = {
                             onAction(
-                                _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenAction.OnMemoPlayClick(
+                                MemoListScreenAction.OnMemoPlayClick(
                                     it
                                 )
                             )
                         },
                         onPauseClick = {
                             onAction(
-                                _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenAction.OnMemoPauseClick(
+                                MemoListScreenAction.OnMemoPauseClick(
                                     it
                                 )
                             )
                         },
                         onTrackSizeAvailable = { trackSizeInfo ->
                             onAction(
-                                _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenAction.OnTrackSizeAvailable(
+                                MemoListScreenAction.OnTrackSizeAvailable(
                                     trackSizeInfo
                                 )
                             )
@@ -132,8 +154,8 @@ fun MemoListScreen(
 @Composable
 private fun Preview() {
     AppTheme {
-        _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreen(
-            state = _root_ide_package_.com.pb.audia.memo.presentation.list_screen.MemoListScreenState(
+        MemoListScreen(
+            state = MemoListScreenState(
                 isLoadingData = false,
                 hasAudioRecorded = false
             ),

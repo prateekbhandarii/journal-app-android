@@ -5,15 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.dropdowns.Selectable
 import com.pb.audia.core.presentation.util.UiText
+import com.pb.audia.memo.presentation.MemoEvents
+import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 import com.pb.audia.memo.presentation.models.MoodChipContent
 import com.pb.audia.memo.presentation.models.MoodUi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MemoListViewModel : ViewModel() {
 
@@ -22,6 +28,9 @@ class MemoListViewModel : ViewModel() {
     private val _state = MutableStateFlow(MemoListScreenState())
     private val selectedMoodFilters = MutableStateFlow<List<MoodUi>>(emptyList())
     private val selectedTopicFilters = MutableStateFlow<List<String>>(emptyList())
+
+    private val eventChannel = Channel<MemoEvents>()
+    val events = eventChannel.receiveAsFlow()
 
     val state = _state
         .onStart {
@@ -38,15 +47,34 @@ class MemoListViewModel : ViewModel() {
 
     fun onAction(action: MemoListScreenAction) {
         when (action) {
-            MemoListScreenAction.OnFabClick -> {}
-            MemoListScreenAction.OnFabLongClick -> {}
-            MemoListScreenAction.OnMoodChipClick -> {
-                _state.update { it.copy(
-                    selectedFilterChip = MemoFilterType.MOODS,
-                ) }
+            MemoListScreenAction.OnFabClick -> {
+                requestAudioPermission()
+                _state.update {
+                    it.copy(
+                        currentAudioCaptureMethod = AudioCaptureMethod.STANDARD
+                    )
+                }
             }
+
+            MemoListScreenAction.OnFabLongClick -> {
+                requestAudioPermission()
+                _state.update {
+                    it.copy(
+                        currentAudioCaptureMethod = AudioCaptureMethod.QUICK
+                    )
+                }
+            }
+
+            MemoListScreenAction.OnMoodChipClick -> {
+                _state.update {
+                    it.copy(
+                        selectedFilterChip = MemoFilterType.MOODS,
+                    )
+                }
+            }
+
             is MemoListScreenAction.OnRemoveFilters -> {
-                when(action.filterType) {
+                when (action.filterType) {
                     MemoFilterType.MOODS -> {
                         selectedMoodFilters.value = emptyList()
                     }
@@ -56,11 +84,15 @@ class MemoListViewModel : ViewModel() {
                     }
                 }
             }
+
             MemoListScreenAction.OnTopicChipClick -> {
-                _state.update { it.copy(
-                    selectedFilterChip = MemoFilterType.TOPICS,
-                ) }
+                _state.update {
+                    it.copy(
+                        selectedFilterChip = MemoFilterType.TOPICS,
+                    )
+                }
             }
+
             MemoListScreenAction.OnSettingsClick -> {}
 
             MemoListScreenAction.OnDismissTopicChipDropdown,
@@ -81,6 +113,9 @@ class MemoListViewModel : ViewModel() {
             is MemoListScreenAction.OnMemoPauseClick -> TODO()
             is MemoListScreenAction.OnMemoPlayClick -> TODO()
             is MemoListScreenAction.OnTrackSizeAvailable -> TODO()
+            MemoListScreenAction.OnAudioPermissionGranted -> {
+                Timber.d("Audio permission granted, ready to record audio")
+            }
         }
     }
 
@@ -102,6 +137,10 @@ class MemoListViewModel : ViewModel() {
                 selectedMoods + moodUi
             }
         }
+    }
+
+    private fun requestAudioPermission() = viewModelScope.launch {
+        eventChannel.send(MemoEvents.RequestAudioPermission)
     }
 
     private fun observeFilters() {
