@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.bgGradiant
 import com.pb.audia.core.presentation.util.ObserveAsEvents
@@ -28,10 +27,11 @@ import com.pb.audia.memo.presentation.list_screen.components.FilterRow
 import com.pb.audia.memo.presentation.list_screen.components.MemoTopBar
 import com.pb.audia.memo.presentation.list_screen.components.RecordFloatingButton
 import com.pb.audia.memo.presentation.models.AudioCaptureMethod
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MemoListScreenRoot(
-    viewModel: MemoListViewModel = viewModel()
+    viewModel: MemoListViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

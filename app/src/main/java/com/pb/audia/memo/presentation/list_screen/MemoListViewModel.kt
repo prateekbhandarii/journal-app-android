@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.dropdowns.Selectable
 import com.pb.audia.core.presentation.util.UiText
+import com.pb.audia.memo.domain.recording.VoiceRecorder
 import com.pb.audia.memo.presentation.MemoEvents
 import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 import com.pb.audia.memo.presentation.models.MoodChipContent
@@ -21,7 +22,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MemoListViewModel : ViewModel() {
+class MemoListViewModel(
+    private val voiceRecorder: VoiceRecorder
+) : ViewModel() {
 
     private var hasLoadedInitialData = false
 
