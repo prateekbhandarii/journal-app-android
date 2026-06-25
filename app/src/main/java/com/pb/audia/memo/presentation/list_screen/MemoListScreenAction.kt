@@ -18,4 +18,8 @@ sealed interface MemoListScreenAction {
     data class OnMemoPauseClick(val memo: Int) : MemoListScreenAction
     data class OnTrackSizeAvailable(val trackSize: TrackSizeInfo) : MemoListScreenAction
     data object OnAudioPermissionGranted : MemoListScreenAction
+    data object OnCancelRecording : MemoListScreenAction
+    data object OnPauseRecording : MemoListScreenAction
+    data object OnResumeRecording : MemoListScreenAction
+    data object OnCompleteRecording : MemoListScreenAction
 }

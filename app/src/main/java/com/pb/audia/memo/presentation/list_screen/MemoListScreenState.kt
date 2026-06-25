@@ -9,14 +9,20 @@ import com.pb.audia.memo.presentation.models.MemoSection
 import com.pb.audia.memo.presentation.models.MemoUi
 import com.pb.audia.memo.presentation.models.MoodChipContent
 import com.pb.audia.memo.presentation.models.MoodUi
+import com.pb.audia.memo.presentation.models.RecordingState
+import java.util.Locale
+import kotlin.math.roundToInt
+import kotlin.time.Duration
 
 data class MemoListScreenState(
     val memoMap: Map<UiText, List<MemoUi>> = emptyMap(),
     val currentAudioCaptureMethod: AudioCaptureMethod? = null,
+    val recordingElapsedDuration: Duration = Duration.ZERO,
     val hasAudioRecorded: Boolean = false,
     val hasActiveTopicFilters: Boolean = false,
     val hasActiveMoodFilter: Boolean = false,
     val isLoadingData: Boolean = false,
+    val recordingState: RecordingState = RecordingState.NOT_RECORDING,
     val moods: List<Selectable<MoodUi>> = emptyList(),
     val topics: List<Selectable<String>> = listOf("Love", "Happy", "Work").asUnselectedItems(),
     val moodChipContent: MoodChipContent = MoodChipContent(),
@@ -29,6 +35,22 @@ data class MemoListScreenState(
             MemoSection(
                 dateHeader = dayText,
                 memos = memo
+            )
+        }
+
+    val formattedRecordDuration: String
+        get() {
+            val minutes = (recordingElapsedDuration.inWholeMinutes % 60).toInt()
+            val seconds = (recordingElapsedDuration.inWholeSeconds % 60).toInt()
+            val centiSeconds =
+                ((recordingElapsedDuration.inWholeMilliseconds % 1000) / 10.0).roundToInt()
+
+            return String.format(
+                locale = Locale.US,
+                format = "%02d:%02d:%02d",
+                minutes,
+                seconds,
+                centiSeconds
             )
         }
 }

@@ -10,21 +10,29 @@ import com.pb.audia.memo.presentation.MemoEvents
 import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 import com.pb.audia.memo.presentation.models.MoodChipContent
 import com.pb.audia.memo.presentation.models.MoodUi
+import com.pb.audia.memo.presentation.models.RecordingState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 
 class MemoListViewModel(
     private val voiceRecorder: VoiceRecorder
 ) : ViewModel() {
+
+    companion object {
+        private val MIN_RECORD_DURATION = 1.5.seconds
+    }
 
     private var hasLoadedInitialData = false
 
@@ -117,8 +125,86 @@ class MemoListViewModel(
             is MemoListScreenAction.OnMemoPlayClick -> TODO()
             is MemoListScreenAction.OnTrackSizeAvailable -> TODO()
             MemoListScreenAction.OnAudioPermissionGranted -> {
-                Timber.d("Audio permission granted, ready to record audio")
+                startRecording(captureMethod = AudioCaptureMethod.STANDARD)
             }
+
+            MemoListScreenAction.OnCancelRecording -> cancelRecording()
+            MemoListScreenAction.OnCompleteRecording -> stopRecording()
+            MemoListScreenAction.OnPauseRecording -> pauseRecording()
+            MemoListScreenAction.OnResumeRecording -> resumeRecording()
+        }
+    }
+
+    private fun pauseRecording() {
+        voiceRecorder.pauseRecording()
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.PAUSED
+            )
+        }
+    }
+
+    private fun resumeRecording() {
+        voiceRecorder.resumeRecording()
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NORMAL_CAPTURE
+            )
+        }
+    }
+
+    private fun cancelRecording() {
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NOT_RECORDING,
+                currentAudioCaptureMethod = null
+            )
+        }
+        voiceRecorder.cancelRecording()
+    }
+
+    private fun stopRecording() {
+        voiceRecorder.stopRecording()
+        _state.update {
+            it.copy(
+                recordingState = RecordingState.NOT_RECORDING
+            )
+        }
+
+        val recordingDetails = voiceRecorder.recordingDetails.value
+        viewModelScope.launch {
+            if (recordingDetails.duration < MIN_RECORD_DURATION) {
+                eventChannel.send(MemoEvents.ShowShortRecordingToast)
+            } else {
+                eventChannel.send(MemoEvents.OnDoneRecording)
+            }
+        }
+    }
+
+    private fun startRecording(captureMethod: AudioCaptureMethod) {
+        _state.update {
+            it.copy(
+                recordingState = when (captureMethod) {
+                    AudioCaptureMethod.STANDARD -> RecordingState.NORMAL_CAPTURE
+                    AudioCaptureMethod.QUICK -> RecordingState.QUICK_CAPTURE
+                }
+            )
+        }
+        voiceRecorder.startRecording()
+
+        if (captureMethod == AudioCaptureMethod.STANDARD) {
+            voiceRecorder
+                .recordingDetails
+                .distinctUntilChangedBy { it.duration }
+                .map { it.duration }
+                .onEach { duration ->
+                    _state.update {
+                        it.copy(
+                            recordingElapsedDuration = duration
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
         }
     }
 

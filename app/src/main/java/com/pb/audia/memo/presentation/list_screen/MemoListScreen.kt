@@ -1,6 +1,7 @@
 package com.pb.audia.memo.presentation.list_screen
 
 import android.Manifest
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -13,21 +14,28 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.bgGradiant
 import com.pb.audia.core.presentation.util.ObserveAsEvents
+import com.pb.audia.core.presentation.util.isAppInForeground
 import com.pb.audia.memo.presentation.MemoEvents
 import com.pb.audia.memo.presentation.components.MemoTimeLine
 import com.pb.audia.memo.presentation.list_screen.components.EmptyStateBackground
 import com.pb.audia.memo.presentation.list_screen.components.FilterRow
+import com.pb.audia.memo.presentation.list_screen.components.MemoRecordingSheet
 import com.pb.audia.memo.presentation.list_screen.components.MemoTopBar
 import com.pb.audia.memo.presentation.list_screen.components.RecordFloatingButton
 import com.pb.audia.memo.presentation.models.AudioCaptureMethod
+import com.pb.audia.memo.presentation.models.RecordingState
 import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 @Composable
 fun MemoListScreenRoot(
@@ -43,11 +51,31 @@ fun MemoListScreenRoot(
         }
     }
 
+    val context = LocalContext.current
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is MemoEvents.RequestAudioPermission -> {
                 permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
+
+            is MemoEvents.ShowShortRecordingToast -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.audio_recording_was_too_short),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            is MemoEvents.OnDoneRecording -> {
+                Timber.d("onDoneRecording event received")
+            }
+        }
+    }
+
+    val isAppInForeground by isAppInForeground()
+    LaunchedEffect(isAppInForeground, state.recordingState) {
+        if (state.recordingState == RecordingState.NORMAL_CAPTURE && !isAppInForeground) {
+            viewModel.onAction(MemoListScreenAction.OnPauseRecording)
         }
     }
 
@@ -146,6 +174,20 @@ fun MemoListScreen(
                     )
                 }
             }
+        }
+
+        if (state.recordingState in listOf(
+                RecordingState.NORMAL_CAPTURE, RecordingState.PAUSED
+            )
+        ) {
+            MemoRecordingSheet(
+                formattedRecordDuration = state.formattedRecordDuration,
+                isRecording = state.recordingState == RecordingState.NORMAL_CAPTURE,
+                onDismiss = { onAction(MemoListScreenAction.OnCancelRecording) },
+                onPauseClick = { onAction(MemoListScreenAction.OnPauseRecording) },
+                onResumeClick = { onAction(MemoListScreenAction.OnResumeRecording) },
+                onCompleteRecording = { onAction(MemoListScreenAction.OnCompleteRecording) }
+            )
         }
     }
 }

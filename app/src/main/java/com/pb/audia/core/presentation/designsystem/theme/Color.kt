@@ -68,6 +68,12 @@ val Gray4 = Color(0xFFD1D1D6)
 val Gray5 = Color(0xFFE5E5EA)
 val Gray6 = Color(0xFFF2F2F7)
 
+val ColorScheme.primary90: Color
+    get() = Primary90
+
+val ColorScheme.primary95: Color
+    get() = Primary95
+
 val ColorScheme.bgGradiant: Brush
     get() = Brush.verticalGradient(
         listOf(
