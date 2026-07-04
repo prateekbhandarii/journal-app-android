@@ -27,6 +27,7 @@ import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.bgGradiant
 import com.pb.audia.core.presentation.util.ObserveAsEvents
 import com.pb.audia.core.presentation.util.isAppInForeground
+import com.pb.audia.memo.domain.recording.RecordingDetails
 import com.pb.audia.memo.presentation.MemoEvents
 import com.pb.audia.memo.presentation.components.MemoTimeLine
 import com.pb.audia.memo.presentation.list_screen.components.EmptyStateBackground
@@ -41,6 +42,7 @@ import timber.log.Timber
 
 @Composable
 fun MemoListScreenRoot(
+    onNavigateToCreateMemo: (RecordingDetails) -> Unit,
     viewModel: MemoListViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -69,7 +71,7 @@ fun MemoListScreenRoot(
             }
 
             is MemoEvents.OnDoneRecording -> {
-                Timber.d("onDoneRecording event received")
+                onNavigateToCreateMemo(event.details)
             }
         }
     }

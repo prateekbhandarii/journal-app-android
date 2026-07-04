@@ -4,19 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.pb.audia.app.navigation.NavigationRoot
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
-import com.pb.audia.core.presentation.designsystem.theme.bgGradiant
-import com.pb.audia.memo.presentation.list_screen.MemoListScreenRoot
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,14 +14,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AppTheme {
-                Scaffold(
-                    containerColor = Color.Transparent,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.bgGradiant)
-                ) { innerPadding ->
-                    MemoListScreenRoot()
-                }
+                NavigationRoot(
+                    navController = rememberNavController()
+                )
             }
         }
     }

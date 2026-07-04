@@ -180,7 +180,7 @@ class MemoListViewModel(
             if (recordingDetails.duration < MIN_RECORD_DURATION) {
                 eventChannel.send(MemoEvents.ShowShortRecordingToast)
             } else {
-                eventChannel.send(MemoEvents.OnDoneRecording)
+                eventChannel.send(MemoEvents.OnDoneRecording(recordingDetails))
             }
         }
     }
