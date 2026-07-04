@@ -89,3 +89,11 @@ val ColorScheme.buttonGradiant: Brush
             Primary50
         )
     )
+
+val ColorScheme.buttonGradiantPressed: Brush
+    get() = Brush.verticalGradient(
+        listOf(
+            Primary60,
+            Primary40
+        )
+    )

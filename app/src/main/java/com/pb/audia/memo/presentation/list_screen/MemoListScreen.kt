@@ -1,6 +1,7 @@
 package com.pb.audia.memo.presentation.list_screen
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
@@ -31,7 +33,7 @@ import com.pb.audia.memo.presentation.list_screen.components.EmptyStateBackgroun
 import com.pb.audia.memo.presentation.list_screen.components.FilterRow
 import com.pb.audia.memo.presentation.list_screen.components.MemoRecordingSheet
 import com.pb.audia.memo.presentation.list_screen.components.MemoTopBar
-import com.pb.audia.memo.presentation.list_screen.components.RecordFloatingButton
+import com.pb.audia.memo.presentation.list_screen.components.QuickRecordFab
 import com.pb.audia.memo.presentation.models.AudioCaptureMethod
 import com.pb.audia.memo.presentation.models.RecordingState
 import org.koin.androidx.compose.koinViewModel
@@ -90,11 +92,29 @@ fun MemoListScreen(
     state: MemoListScreenState,
     onAction: (MemoListScreenAction) -> Unit,
 ) {
+    val context = LocalContext.current
     Scaffold(
         floatingActionButton = {
-            RecordFloatingButton(
+            QuickRecordFab(
                 onClick = {
-                    onAction(MemoListScreenAction.OnFabClick)
+                    onAction(MemoListScreenAction.OnRecordFabClick)
+                },
+                isQuickRecording = state.recordingState == RecordingState.QUICK_CAPTURE,
+                onLongPressEnd = { cancelledRecording ->
+                    if (cancelledRecording) onAction(MemoListScreenAction.OnCancelRecording)
+                    else onAction(MemoListScreenAction.OnCompleteRecording)
+                },
+                onLongPressStart = {
+                    val hasPermission = ContextCompat
+                        .checkSelfPermission(
+                            context,
+                            Manifest.permission.RECORD_AUDIO
+                        ) == PackageManager.PERMISSION_GRANTED
+                    if (hasPermission) {
+                        onAction(MemoListScreenAction.OnRecordButtonLongClick)
+                    } else {
+                        onAction(MemoListScreenAction.OnRequestPermissionQuickRecording)
+                    }
                 }
             )
         },

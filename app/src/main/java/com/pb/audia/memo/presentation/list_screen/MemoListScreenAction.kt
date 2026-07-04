@@ -10,8 +10,9 @@ sealed interface MemoListScreenAction {
     data object OnTopicChipClick : MemoListScreenAction
     data object OnDismissTopicChipDropdown : MemoListScreenAction
     data class OnFilterByTopicClick(val topic: String) : MemoListScreenAction
-    data object OnFabClick : MemoListScreenAction
-    data object OnFabLongClick : MemoListScreenAction
+    data object OnRecordFabClick : MemoListScreenAction
+    data object OnRequestPermissionQuickRecording : MemoListScreenAction
+    data object OnRecordButtonLongClick : MemoListScreenAction
     data object OnSettingsClick : MemoListScreenAction
     data class OnRemoveFilters(val filterType: MemoFilterType) : MemoListScreenAction
     data class OnMemoPlayClick(val memo: Int) : MemoListScreenAction

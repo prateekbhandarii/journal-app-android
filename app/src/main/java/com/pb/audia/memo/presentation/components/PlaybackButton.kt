@@ -12,36 +12,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.Pause
 import com.pb.audia.core.presentation.util.defaultShadow
-import com.pb.audia.memo.presentation.models.MoodUi
 import com.pb.audia.memo.presentation.models.PlaybackState
 
 @Composable
 fun PlaybackButton(
     modifier: Modifier = Modifier,
-    playbackState: com.pb.audia.memo.presentation.models.PlaybackState,
+    playbackState: PlaybackState,
     onPlayClick: () -> Unit,
     onPauseClick: () -> Unit,
     colors: IconButtonColors
 ) {
     FilledIconButton(
         onClick = when (playbackState) {
-            _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PLAYING -> onPauseClick
-            _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PAUSED,
-            _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.STOPPED -> onPlayClick
+            PlaybackState.PLAYING -> onPauseClick
+            PlaybackState.PAUSED,
+            PlaybackState.STOPPED -> onPlayClick
         },
         colors = colors,
         modifier = modifier.defaultShadow()
     ) {
         Icon(
             imageVector = when (playbackState) {
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PLAYING -> Icons.Filled.Pause
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PAUSED,
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.STOPPED -> Icons.Filled.PlayArrow
+                PlaybackState.PLAYING -> Icons.Filled.Pause
+                PlaybackState.PAUSED,
+                PlaybackState.STOPPED -> Icons.Filled.PlayArrow
             },
             contentDescription = when (playbackState) {
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PLAYING -> "pause"
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.PAUSED,
-                _root_ide_package_.com.pb.audia.memo.presentation.models.PlaybackState.STOPPED -> "play"
+                PlaybackState.PLAYING -> "pause"
+                PlaybackState.PAUSED,
+                PlaybackState.STOPPED -> "play"
             }
         )
     }

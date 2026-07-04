@@ -1,19 +1,13 @@
 package com.pb.audia.memo.presentation.list_screen.components
 
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -25,12 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,9 +29,6 @@ import com.pb.audia.R
 import com.pb.audia.core.presentation.designsystem.theme.AppTheme
 import com.pb.audia.core.presentation.designsystem.theme.Microphone
 import com.pb.audia.core.presentation.designsystem.theme.Pause
-import com.pb.audia.core.presentation.designsystem.theme.buttonGradiant
-import com.pb.audia.core.presentation.designsystem.theme.primary90
-import com.pb.audia.core.presentation.designsystem.theme.primary95
 
 private const val PRIMARY_BUTTON_BUBBLE_SIZE_DP = 128
 private const val SECONDARY_BUTTON_BUBBLE_SIZE_DP = 48
@@ -143,57 +130,28 @@ fun SheetContent(
                 )
             }
 
-            val interactionSource = remember {
-                MutableInteractionSource()
-            }
-            val isPressed by interactionSource.collectIsPressedAsState()
-            Box(
-                modifier = Modifier
-                    .size(primaryBubbleSize)
-                    .background(
-                        color = if (isRecording) {
-                            MaterialTheme.colorScheme.primary95
+            MemoBubbleFab(
+                showBubble = isRecording,
+                onClick = if (isRecording) {
+                    onCompleteRecording
+                } else onResumeClick,
+                icon = {
+                    Icon(
+                        imageVector = if (isRecording) {
+                            Icons.Default.Check
                         } else {
-                            Color.Transparent
+                            Icons.Filled.Microphone
                         },
-                        shape = CircleShape
-                    )
-                    .padding(10.dp)
-                    .background(
-                        color = if (isRecording) {
-                            MaterialTheme.colorScheme.primary90
+                        contentDescription = if (isRecording) {
+                            "Finish recording"
                         } else {
-                            Color.Transparent
+                            "Resume recording"
                         },
-                        shape = CircleShape
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
-                    .padding(16.dp)
-                    .background(
-                        brush = MaterialTheme.colorScheme.buttonGradiant,
-                        shape = CircleShape
-                    )
-                    .clip(CircleShape)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = LocalIndication.current,
-                        onClick = if (isRecording) onCompleteRecording else onResumeClick
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (isRecording) {
-                        Icons.Default.Check
-                    } else {
-                        Icons.Filled.Microphone
-                    },
-                    contentDescription = if (isRecording) {
-                        "Finish recording"
-                    } else {
-                        "Resume recording"
-                    },
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
+                },
+                primaryButtonSize = 72.dp
+            )
 
             FilledIconButton(
                 onClick = if (isRecording) onPauseClick else onCompleteRecording,

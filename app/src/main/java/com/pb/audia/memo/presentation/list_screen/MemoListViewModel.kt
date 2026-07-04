@@ -58,7 +58,7 @@ class MemoListViewModel(
 
     fun onAction(action: MemoListScreenAction) {
         when (action) {
-            MemoListScreenAction.OnFabClick -> {
+            MemoListScreenAction.OnRecordFabClick -> {
                 requestAudioPermission()
                 _state.update {
                     it.copy(
@@ -67,13 +67,17 @@ class MemoListViewModel(
                 }
             }
 
-            MemoListScreenAction.OnFabLongClick -> {
+            MemoListScreenAction.OnRequestPermissionQuickRecording -> {
                 requestAudioPermission()
                 _state.update {
                     it.copy(
                         currentAudioCaptureMethod = AudioCaptureMethod.QUICK
                     )
                 }
+            }
+
+            MemoListScreenAction.OnRecordButtonLongClick -> {
+                startRecording(AudioCaptureMethod.QUICK)
             }
 
             MemoListScreenAction.OnMoodChipClick -> {
